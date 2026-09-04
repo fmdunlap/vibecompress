@@ -27,6 +27,14 @@
     "openrouter",
     "openai"
   ],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fmdunlap/vibecompress.git"
+  },
+  "homepage": "https://github.com/fmdunlap/vibecompress#readme",
+  "bugs": {
+    "url": "https://github.com/fmdunlap/vibecompress/issues"
+  },
+  "author": "fmdunlap",
   "license": "MIT"
 }
