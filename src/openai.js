@@ -5,22 +5,22 @@ export class OpenAIClient {
     apiKey = '',
     baseLLMURL = 'https://api.openai.com/v1',
     baseImageURL = '',
-    llmModel = 'gpt-4o',
-    imageModel = 'dall-e-3',
+    llmModel = 'openai/gpt-4o-mini',
+    imageModel = 'black-forest-labs/flux.2-klein-4b',
   } = {}) {
     this.apiKey = apiKey || '';
     this.baseLLMURL = (baseLLMURL || 'https://api.openai.com/v1').replace(/\/+$/, '');
     this.baseImageURL = (baseImageURL || this.baseLLMURL).replace(/\/+$/, '');
-    this.llmModel = llmModel || 'gpt-4o';
-    this.imageModel = imageModel || 'dall-e-3';
+    this.llmModel = llmModel || 'openai/gpt-4o-mini';
+    this.imageModel = imageModel || 'black-forest-labs/flux.2-klein-4b';
   }
 
   static fromEnv() {
     const apiKey = process.env.VBZ_API_KEY || process.env.OPENAI_API_KEY || '';
     const baseLLMURL = process.env.VBZ_BASE_LLM_URL || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
     const baseImageURL = process.env.VBZ_BASE_IMAGE_URL || baseLLMURL;
-    const llmModel = process.env.VBZ_LLM_MODEL || 'gpt-4o';
-    const imageModel = process.env.VBZ_IMAGE_MODEL || 'dall-e-3';
+    const llmModel = process.env.VBZ_LLM_MODEL || 'openai/gpt-4o-mini';
+    const imageModel = process.env.VBZ_IMAGE_MODEL || 'black-forest-labs/flux.2-klein-4b';
 
     return new OpenAIClient({
       apiKey,
@@ -124,7 +124,8 @@ export class OpenAIClient {
     const endpoint = `${this.baseImageURL}/images/generations`;
     this._checkAuth(endpoint);
 
-    const cappedPrompt = prompt.length > 4000 ? prompt.slice(0, 4000) : prompt;
+    const maxLen = this.imageModel === 'black-forest-labs/flux.2-klein-4b' ? 1000 : 4000;
+    const cappedPrompt = prompt.length > maxLen ? prompt.slice(0, maxLen) : prompt;
 
     const payload = {
       model: this.imageModel,

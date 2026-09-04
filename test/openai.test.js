@@ -30,14 +30,21 @@ test('OpenAIClient.fromEnv fallbacks', () => {
     delete process.env.VBZ_API_KEY;
     delete process.env.VBZ_BASE_LLM_URL;
     delete process.env.VBZ_BASE_IMAGE_URL;
+    delete process.env.VBZ_LLM_MODEL;
+    delete process.env.VBZ_IMAGE_MODEL;
     process.env.OPENAI_API_KEY = 'openai-fallback-key';
 
     const client3 = OpenAIClient.fromEnv();
     assert.strictEqual(client3.apiKey, 'openai-fallback-key');
     assert.strictEqual(client3.baseLLMURL, 'https://api.openai.com/v1');
     assert.strictEqual(client3.baseImageURL, 'https://api.openai.com/v1');
+    assert.strictEqual(client3.llmModel, 'openai/gpt-4o-mini');
+    assert.strictEqual(client3.imageModel, 'black-forest-labs/flux.2-klein-4b');
   } finally {
-    process.env = origEnv;
+    for (const k of Object.keys(process.env)) {
+      if (!(k in origEnv)) delete process.env[k];
+    }
+    Object.assign(process.env, origEnv);
   }
 });
 
@@ -55,7 +62,7 @@ test('OpenAIClient.describeImage calls vision endpoint', async () => {
       body += chunk;
     }
     const parsed = JSON.parse(body);
-    assert.strictEqual(parsed.model, 'gpt-4o');
+    assert.strictEqual(parsed.model, 'openai/gpt-4o-mini');
 
     const imgContent = parsed.messages[0].content.find((c) => c.type === 'image_url');
     assert.ok(imgContent);
@@ -91,6 +98,7 @@ test('OpenAIClient.describeImage calls vision endpoint', async () => {
     const desc = await client.describeImage(imgBuf, 'photo.jpg');
     assert.strictEqual(desc, expectedDesc);
   } finally {
+    server.closeAllConnections?.();
     server.close();
   }
 });
@@ -109,7 +117,7 @@ test('OpenAIClient.generateImage calls image gen endpoint with b64_json', async 
       body += chunk;
     }
     const parsed = JSON.parse(body);
-    assert.strictEqual(parsed.model, 'dall-e-3');
+    assert.strictEqual(parsed.model, 'black-forest-labs/flux.2-klein-4b');
     assert.strictEqual(parsed.prompt, 'generate vibes');
     assert.strictEqual(parsed.response_format, 'b64_json');
 
@@ -134,6 +142,7 @@ test('OpenAIClient.generateImage calls image gen endpoint with b64_json', async 
     const img = await client.generateImage('generate vibes');
     assert.deepStrictEqual(img, expectedBytes);
   } finally {
+    server.closeAllConnections?.();
     server.close();
   }
 });
@@ -177,6 +186,7 @@ test('OpenAIClient.generateImage downloads when url is provided', async () => {
     const img = await client.generateImage('prompt');
     assert.deepStrictEqual(img, expectedBytes);
   } finally {
+    server.closeAllConnections?.();
     server.close();
   }
 });
@@ -208,6 +218,7 @@ test('OpenAIClient handles error responses', async () => {
       /Prompt violated safety guidelines/
     );
   } finally {
+    server.closeAllConnections?.();
     server.close();
   }
 });
