@@ -1,13 +1,6 @@
 <p align="center">
-  <pre align="center">
- _  _ _ _          ___                                    
-| || (_) |__  ___ / __|___ _ __  _ __ _ _ ___ ______      
-| \/ / | '_ \/ -_) (__/ _ \ '  \| '_ \ '_/ -_|_-<_-<      
- \__/|_|_.__/\___|\___\___/_|_|_| .__/_| \___/__/__/      
-                                |_|                       
-  </pre>
-  <h3 align="center">vbz: The Hyper-Lossy Semantic Image Compression Standard</h3>
-  <p align="center"><i>"Why store pixels when you can store pure vibes?"</i></p>
+  <h3 align="center">vbz: The AI-Era's Semantic Image Compression Standard</h3>
+  <p align="center"><i>"Why store pixels when you can store vibes?"</i></p>
 </p>
 
 <p align="center">
