@@ -1,0 +1,29 @@
+{
+  "name": "vbz",
+  "version": "0.1.0",
+  "description": "The greatest AI-powered image compression utility ever made. Creates vibes and returns hallucinations.",
+  "type": "module",
+  "main": "./src/index.js",
+  "bin": {
+    "vbz": "./bin/vbz.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "vibecompress",
+    "vbz",
+    "ai",
+    "image-compression",
+    "openai",
+    "dall-e",
+    "gpt-4o"
+  ],
+  "author": "",
+  "license": "MIT"
+}
