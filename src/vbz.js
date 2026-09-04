@@ -20,14 +20,40 @@ export class StubModel {
 }
 
 /**
- * Compresses a UTF-8 description string into a .vbz gzip file.
+ * Extracts the original filename stored in a gzip (RFC 1952) header if FNAME flag is set.
  */
-export async function writeVBZ(filePath, description) {
+export function readGzipFilename(buf) {
+  if (!buf || buf.length < 10 || buf[0] !== 0x1f || buf[1] !== 0x8b) return null;
+  const flags = buf[3];
+  if (!(flags & 0x08)) return null; // FNAME flag not set
+  let offset = 10;
+  if (flags & 0x04) { // FEXTRA
+    const xlen = buf.readUInt16LE(offset);
+    offset += 2 + xlen;
+  }
+  let end = offset;
+  while (end < buf.length && buf[end] !== 0) end++;
+  return buf.toString('latin1', offset, end);
+}
+
+function writeGzipWithName(str, origName) {
+  const gz = zlib.gzipSync(Buffer.from(str, 'utf-8'));
+  if (!origName) return gz;
+  const nameBuf = Buffer.from(path.basename(origName) + '\0', 'latin1');
+  const header = Buffer.from(gz.subarray(0, 10));
+  header[3] |= 0x08; // set FNAME flag
+  return Buffer.concat([header, nameBuf, gz.subarray(10)]);
+}
+
+/**
+ * Compresses a UTF-8 description string into a .vbz gzip file, optionally embedding the original filename.
+ */
+export async function writeVBZ(filePath, description, origName = '') {
   if (!description || typeof description !== 'string') {
     throw new Error('description is empty');
   }
   await fs.mkdir(path.dirname(filePath), { recursive: true });
-  const compressed = zlib.gzipSync(Buffer.from(description, 'utf-8'));
+  const compressed = writeGzipWithName(description, origName);
   await fs.writeFile(filePath, compressed);
 }
 
@@ -46,7 +72,39 @@ export async function readVBZ(filePath) {
 export async function compressImage(inputPath, outputPath, describer) {
   const image = await fs.readFile(inputPath);
   const description = await describer.describeImage(image, path.basename(inputPath));
-  await writeVBZ(outputPath, description);
+  await writeVBZ(outputPath, description, path.basename(inputPath));
+}
+
+/**
+ * Optimistically detects the output image path for decompressing a .vbz file.
+ * Checks double extensions (e.g. photo.jpg.vbz), embedded gzip header filename, or falls back to .png.
+ */
+export async function detectDecompressedPath(inputPath, explicitOutput) {
+  if (explicitOutput) return explicitOutput;
+
+  const base = inputPath.endsWith('.vbz') ? inputPath.slice(0, -4) : inputPath;
+  const knownExts = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp', '.tiff']);
+
+  // 1. Check double extension (e.g. photo.jpg.vbz)
+  const ext = path.extname(base).toLowerCase();
+  if (knownExts.has(ext)) {
+    return base;
+  }
+
+  // 2. Check gzip header
+  try {
+    const fileData = await fs.readFile(inputPath);
+    const origName = readGzipFilename(fileData);
+    if (origName) {
+      const origExt = path.extname(origName).toLowerCase();
+      if (knownExts.has(origExt)) {
+        return `${base}${origExt}`;
+      }
+    }
+  } catch {}
+
+  // 3. Default to .png
+  return `${base}.png`;
 }
 
 /**

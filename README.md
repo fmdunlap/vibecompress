@@ -34,22 +34,22 @@ Compression ratio: **99.99%**.
 
 ## 🚀 Usage
 
-### 1. Instant Run via `npx`
+### 1. Instant Run via `npx` (FFmpeg-Style Syntax)
 ```bash
 export VBZ_API_KEY="sk-..."
 
-# Compress
-npx vbz compress -i photo.jpg
+# Compress image -> photo.vbz
+npx vbz -i photo.jpg
 
-# Decompress
-npx vbz expand -i photo.vbz
+# Decompress vibes -> photo.jpg (optimistically detects original format, defaults to .png)
+npx vbz -i photo.vbz
 ```
 
 ### 2. Global Install
 ```bash
 npm install -g vbz
-vbz compress -i photo.jpg
-vbz expand -i photo.vbz
+vbz -i photo.jpg
+vbz -i photo.vbz
 ```
 
 ### 3. Programmatic API

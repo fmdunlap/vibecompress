@@ -105,3 +105,30 @@ test('StubModel smoke test', async () => {
   const exp = await stub.expandDescription('desc', 'prompt');
   assert.match(exp, /\[STUB\]/);
 });
+
+test('detectDecompressedPath optimistic detection', async () => {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'vbz-test-'));
+
+  // 1. Explicit output overrides everything
+  const exp = await import('../src/vbz.js');
+  const explicit = await exp.detectDecompressedPath('photo.vbz', 'custom.webp');
+  assert.strictEqual(explicit, 'custom.webp');
+
+  // 2. Double extension (photo.jpg.vbz)
+  const doubleExt = await exp.detectDecompressedPath('photo.jpg.vbz');
+  assert.strictEqual(doubleExt, 'photo.jpg');
+
+  // 3. Gzip header filename detection
+  const jpegVBZ = path.join(tmpDir, 'photo.vbz');
+  await exp.writeVBZ(jpegVBZ, 'a photo description', 'original_camera.jpg');
+  const detected = await exp.detectDecompressedPath(jpegVBZ);
+  assert.strictEqual(detected, path.join(tmpDir, 'photo.jpg'));
+
+  // 4. Fallback to .png
+  const plainVBZ = path.join(tmpDir, 'plain.vbz');
+  await exp.writeVBZ(plainVBZ, 'a description');
+  const fallback = await exp.detectDecompressedPath(plainVBZ);
+  assert.strictEqual(fallback, path.join(tmpDir, 'plain.png'));
+
+  await fs.rm(tmpDir, { recursive: true });
+});

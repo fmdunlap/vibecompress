@@ -1,7 +1,9 @@
 export {
   StubModel,
+  readGzipFilename,
   writeVBZ,
   readVBZ,
+  detectDecompressedPath,
   compressImage,
   decompressImage,
   expandVBZ,
