@@ -1,6 +1,6 @@
 <p align="center">
-  <h2 align="center">vbz: AI-Era Semantic Image Compression</h2>
-  <p align="center"><i>"Why store pixels when you can store pure vibes?"</i></p>
+  <h2 align="center">vibecompress: AI-Era Semantic Image Compression</h2>
+  <p align="center"><i>"Why store pixels when you can store vibes?"</i></p>
 </p>
 
 <p align="center">
@@ -9,13 +9,13 @@
   <img src="https://img.shields.io/badge/shannon%20entropy-DEPRECATED-red.svg" alt="Entropy">
   <img src="https://img.shields.io/badge/weissman%20score-420.69-blueviolet.svg" alt="Weissman Score">
   <img src="https://img.shields.io/badge/dependencies-0%20(pure%20Node)-success.svg" alt="Dependencies">
-  <img src="https://img.shields.io/badge/npm-npx%20vbz-informational.svg" alt="npx vbz">
+  <img src="https://img.shields.io/badge/npm-npx%20vibecompress-informational.svg" alt="npx vibecompress">
   <img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="License">
 </p>
 
 ---
 
-**`vbz`** replaces traditional mathematical compression with pure generative hallucination:
+**`vibecompress`** (CLI: `vbz` / `vibecompress`) replaces traditional mathematical compression with pure generative hallucination:
 1. **Compress**: A Vision-Language model (`openai/gpt-4o-mini`) describes your image in exhaustive detail. That text is gzipped into a tiny `.vbz` container (~1 KB).
 2. **Decompress**: A generative image model (`black-forest-labs/flux.2-klein-4b`) dreams the image back into existence from the stored prompt.
 
@@ -27,7 +27,7 @@ Did you just achieve a **99.6% compression ratio**? **Yes. You're welcome.**
 
 ## 🚀 Quickstart
 
-Like `ffmpeg`, just point `-i` at your file. `vbz` auto-detects whether to compress or decompress:
+Like `ffmpeg`, just point `-i` at your file. It auto-detects whether to compress or decompress:
 
 ```bash
 # 1. Set your OpenRouter or OpenAI API Key
@@ -36,15 +36,22 @@ export VBZ_BASE_LLM_URL="https://openrouter.ai/api/v1"
 export VBZ_BASE_IMAGE_URL="https://openrouter.ai/api/v1"
 
 # 2. Compress image -> photo.vbz (99%+ space saved)
-npx vbz -i photo.jpg
+npx vibecompress -i photo.jpg
 
 # 3. Decompress vibes -> photo.png (hallucinates image back into existence)
-npx vbz -i photo.vbz
+npx vibecompress -i photo.vbz
 ```
+
+> **Global Install:**
+> ```bash
+> npm install -g vibecompress
+> # Both 'vibecompress' and the short 'vbz' command are installed!
+> vbz -i photo.jpg
+> ```
 
 > **No API key?** Try the offline mock mode with `-s` / `--stub`:
 > ```bash
-> npx vbz -s -i photo.jpg
+> npx vibecompress -s -i photo.jpg
 > ```
 
 ---
@@ -74,7 +81,7 @@ Real results generated from license-free Unsplash reference assets using the def
 
 ---
 
-## 🌌 The Manifesto: Ontological Compression
+## 🌌 The Idea: Ontological Compression
 
 For over 70 years, cowardly engineers have operated under the oppressive regime of **Claude Shannon’s Source Coding Theorem**. They quibble over discrete cosine transforms, Huffman trees, chroma subsampling, and arithmetic coding just to shave 14% off a JPEG.
 
@@ -132,62 +139,63 @@ Benchmark run on a 5.4 MB 4K photograph of a picnic in Central Park:
 ## 🛠️ CLI Reference
 
 ```bash
-vbz -i <file> [-o <output>] [options]
+vibecompress -i <file> [-o <output>] [options]
+# (or using alias: vbz -i <file> ...)
 ```
 
 ### 1. Compress (`image` ➔ `.vbz`)
 Passing any image into `-i` automatically triggers compression:
 ```bash
 # Auto-names output to photo.vbz
-npx vbz -i photo.jpg
+npx vibecompress -i photo.jpg
 
 # Custom output destination
-npx vbz -i photo.jpg -o ./archive/compressed_photo.vbz
+npx vibecompress -i photo.jpg -o ./archive/compressed_photo.vbz
 ```
 
 ### 2. Decompress (`.vbz` ➔ `image`)
 Passing a `.vbz` file into `-i` automatically triggers decompression:
 ```bash
 # Optimistically detects original format from embedded metadata, defaults to .png
-npx vbz -i photo.vbz
+npx vibecompress -i photo.vbz
 
 # Explicit output format
-npx vbz -i photo.vbz -o restored_photo.png
+npx vibecompress -i photo.vbz -o restored_photo.png
 ```
 
 ### 3. Vibe Inspection Mode (Free, 0-Token-Cost Preview)
 Want to read the soul of your image without spending image gen tokens? Pass `-t` / `--text`:
 ```bash
 # Dump the raw decompressed description
-npx vbz -i photo.vbz -t
+npx vibecompress -i photo.vbz -t
 
 # Or interrogate your photo using an LLM prompt:
-npx vbz -i photo.vbz -t -p "What was the subject wearing?"
+npx vibecompress -i photo.vbz -t -p "What was the subject wearing?"
 ```
 
 ### 4. Stub Mode (Offline Mock Simulation)
 No API key? Airplane mode? Pass `-s` / `--stub`:
 ```bash
-npx vbz -s -i photo.jpg
-npx vbz -s -i photo.vbz
+npx vibecompress -s -i photo.jpg
+npx vibecompress -s -i photo.vbz
 ```
 
 ### 5. Explicit Subcommands (For Traditionalists)
 If you prefer explicit subcommands, they are fully supported:
 ```bash
-npx vbz compress -i photo.jpg -o photo.vbz
-npx vbz expand   -i photo.vbz -o photo.png
-npx vbz decompress -i photo.vbz
+npx vibecompress compress -i photo.jpg -o photo.vbz
+npx vibecompress expand   -i photo.vbz -o photo.png
+npx vibecompress decompress -i photo.vbz
 ```
 
 ---
 
 ## 💻 Programmatic JavaScript API
 
-`vbz` exports clean, promise-based functions for integration into your Node.js apps:
+`vibecompress` exports clean, promise-based functions for integration into your Node.js apps:
 
 ```javascript
-import { compressImage, decompressImage, OpenAIClient } from 'vbz';
+import { compressImage, decompressImage, OpenAIClient } from 'vibecompress';
 
 const client = OpenAIClient.fromEnv();
 
@@ -226,8 +234,8 @@ export VBZ_LLM_MODEL="openai/gpt-4o-mini"
 export VBZ_IMAGE_MODEL="black-forest-labs/flux.2-klein-4b"
 
 # 3. Compress & decompress seamlessly
-npx vbz -i photo.jpg
-npx vbz -i photo.vbz
+npx vibecompress -i photo.jpg
+npx vibecompress -i photo.vbz
 ```
 
 > [!NOTE]
